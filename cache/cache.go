@@ -1,7 +1,6 @@
 package cache
 
 import (
-	"fmt"
 	"ru/zakat/L0/db"
 	"ru/zakat/L0/logger"
 	"ru/zakat/L0/models"
@@ -12,6 +11,7 @@ import (
 type Cache struct {
 	orders map[string]*models.Order
 	logger *zap.Logger
+	repo   *db.Repository
 }
 
 func NewCache(repo *db.Repository) *Cache {
@@ -19,14 +19,12 @@ func NewCache(repo *db.Repository) *Cache {
 	orders := repo.FindAll()
 	ordersMap := make(map[string]*models.Order)
 
-	fmt.Println(orders)
-
 	for _, order := range orders {
 		ordersMap[order.UID] = order
 	}
 
 	logger.Info("Cache initialized")
-	return &Cache{ordersMap, logger}
+	return &Cache{ordersMap, logger, repo}
 }
 
 func (c *Cache) FindAll() []*models.Order {
@@ -45,5 +43,6 @@ func (c *Cache) FindOrder(uid string) (*models.Order, bool) {
 }
 
 func (c *Cache) AddOrder(order *models.Order) {
+	c.repo.CreateOrder(order)
 	c.orders[order.UID] = order
 }

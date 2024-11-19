@@ -63,3 +63,7 @@ func (r *Repository) ReadModel(filename string) models.Order {
 	r.db.Create(&order)
 	return order
 }
+
+func (r *Repository) CreateOrder(order *models.Order) {
+	r.db.Create(order)
+}
