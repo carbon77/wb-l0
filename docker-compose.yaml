@@ -1,5 +1,26 @@
 version: "3.8"
 services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - L0_HOST=0.0.0.0
+      - L0_PORT=8080
+      - L0_KAFKA_URL=kafka:9092
+      - L0_DB_HOST=postgres
+      - L0_DB_PORT=5432
+      - L0_DB_USER=postgres
+      - L0_DB_PASSWORD=postgres
+      - L0_DB_DB=wb_l0
+    networks:
+      - net_wb
+    depends_on:
+      kafka:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+
   kafka:
     image: bitnami/kafka:3.9.0
     ports:
@@ -42,6 +63,12 @@ services:
       - "5433:5432"
     volumes:
       - ./db-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "db_prod" ]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
     networks:
       - net_wb
 
