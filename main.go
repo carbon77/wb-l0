@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"ru/zakat/L0/cache"
 	"ru/zakat/L0/db"
+	"ru/zakat/L0/env"
 	"ru/zakat/L0/kafka"
 	"ru/zakat/L0/logger"
 	"ru/zakat/L0/models"
@@ -71,6 +72,8 @@ func main() {
 		})
 	}
 
-	log.Info("Starting server...")
-	r.Run("localhost:8080")
+	port := env.GetEnv("L0_PORT", "8080")
+	host := env.GetEnv("L0_HOST", "localhost")
+	log.Info("Starting server...", zap.String("port", port))
+	r.Run(fmt.Sprintf("%s:%s", host, port))
 }

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"ru/zakat/L0/cache"
+	"ru/zakat/L0/env"
 	"ru/zakat/L0/logger"
 	"ru/zakat/L0/models"
 
@@ -14,7 +15,7 @@ import (
 
 var (
 	log     = logger.NewLogger()
-	address = []string{"localhost:9094"}
+	address = []string{env.GetEnv("L0_KAFKA_URL", "localhost:9094")}
 )
 
 type OrderProducer struct {
