@@ -35,6 +35,7 @@ func main() {
 			c.JSON(http.StatusNotFound, gin.H{
 				"message": fmt.Sprintf("Order not found with id=%s", uid),
 			})
+			return
 		}
 
 		c.JSON(http.StatusOK, order)
