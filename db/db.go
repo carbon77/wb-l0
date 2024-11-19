@@ -36,7 +36,7 @@ func NewRepository() *Repository {
 func (r *Repository) FindAll() []*models.Order {
 	var orders []*models.Order
 
-	result := r.db.Find(&orders)
+	result := r.db.Preload("Items").Preload("Delivery").Preload("Payment").Find(&orders)
 
 	r.logger.Info(fmt.Sprintf("Find all. Rows affected: %d", result.RowsAffected))
 
