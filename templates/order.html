@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Order {{.UID}}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        color: #333;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background: #f2f2f2;
+      }
+
+      .container {
+        margin: 0 10%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Order Details</h1>
+    <div class="container">
+      <div>
+        <h2>Order Information</h2>
+        <p><strong>Order UID:</strong> {{ .UID }}</p>
+        <p><strong>Track Number:</strong> {{ .TrackNumber }}</p>
+        <p><strong>Entry:</strong> {{ .Entry }}</p>
+        <p><strong>Locale:</strong> {{ .Locale }}</p>
+        <p><strong>Customer ID:</strong> {{ .CustomerId }}</p>
+        <p><strong>Created Date:</strong> {{ .DateCreated }}</p>
+      </div>
+      <div>
+        <h2>Delivery Information</h2>
+        <p><strong>Name:</strong> {{ .Delivery.Name }}</p>
+        <p><strong>Phone:</strong> {{ .Delivery.Phone }}</p>
+        <p><strong>Zip Code:</strong> {{ .Delivery.Zip }}</p>
+        <p><strong>City:</strong> {{ .Delivery.City }}</p>
+        <p><strong>Address:</strong> {{ .Delivery.Address }}</p>
+        <p><strong>Region:</strong> {{ .Delivery.Region }}</p>
+        <p><strong>Email:</strong> {{ .Delivery.Email }}</p>
+      </div>
+      <div>
+        <h2>Payment Information</h2>
+        <p><strong>Transaction ID:</strong> {{ .Payment.Transaction }}</p>
+        <p><strong>Currency:</strong> {{ .Payment.Currency }}</p>
+        <p><strong>Provider:</strong> {{ .Payment.Provider }}</p>
+        <p><strong>Amount:</strong> ${{ .Payment.Amount }}</p>
+        <p><strong>Delivery Cost:</strong> ${{ .Payment.DeliveryCost }}</p>
+        <p><strong>Goods Total:</strong> ${{ .Payment.GoodsTotal }}</p>
+      </div>
+    </div>
+
+    <h2>Items</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total Price</th>
+          <th>Brand</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ range .Items }}
+        <tr>
+          <td>{{ .Name }}</td>
+          <td>${{ .Price }}</td>
+          <td>{{ .Sale }}</td>
+          <td>${{ .TotalPrice }}</td>
+          <td>{{ .Brand }}</td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </body>
+</html>

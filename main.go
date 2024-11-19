@@ -19,43 +19,58 @@ func main() {
 	cache := cache.NewCache(repo)
 	orderProducer := kafka.NewProducer()
 	r := gin.Default()
+	r.LoadHTMLGlob("templates/*")
 
 	go kafka.NewConsumer(cache)
-
-	r.POST("/orders/send", func(c *gin.Context) {
-		var order models.Order
-
-		if err := c.BindJSON(&order); err != nil {
-			log.Error("Failed to read request body", zap.Error(err))
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "Failed to read request body",
-			})
-			return
-		}
-
-		orderProducer.SendOrder("orders", &order)
-		c.JSON(http.StatusOK, gin.H{})
-	})
-
-	r.GET("/orders", func(c *gin.Context) {
-		orders := cache.FindAll()
-		c.JSON(http.StatusOK, orders)
-	})
 
 	r.GET("/orders/:uid", func(c *gin.Context) {
 		uid := c.Param("uid")
 		order, ok := cache.FindOrder(uid)
-
 		if !ok {
-			c.JSON(http.StatusNotFound, gin.H{
-				"message": fmt.Sprintf("Order not found with id=%s", uid),
-			})
+			c.HTML(http.StatusNotFound, "notfound.html", gin.H{})
 			return
 		}
 
-		c.JSON(http.StatusOK, order)
+		c.HTML(http.StatusOK, "order.html", order)
 	})
 
+	api := r.Group("/api")
+	{
+		api.POST("/orders/send", func(c *gin.Context) {
+			var order models.Order
+
+			if err := c.BindJSON(&order); err != nil {
+				log.Error("Failed to read request body", zap.Error(err))
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": "Failed to read request body",
+				})
+				return
+			}
+
+			orderProducer.SendOrder("orders", &order)
+			c.JSON(http.StatusOK, gin.H{})
+		})
+
+		api.GET("/orders", func(c *gin.Context) {
+			orders := cache.FindAll()
+			c.JSON(http.StatusOK, orders)
+		})
+
+		api.GET("/orders/:uid", func(c *gin.Context) {
+			uid := c.Param("uid")
+			order, ok := cache.FindOrder(uid)
+
+			if !ok {
+				c.JSON(http.StatusNotFound, gin.H{
+					"message": fmt.Sprintf("Order not found with id=%s", uid),
+				})
+				return
+			}
+
+			c.JSON(http.StatusOK, order)
+		})
+	}
+
 	log.Info("Starting server...")
-	r.Run()
+	r.Run("localhost:8080")
 }
