@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"ru/zakat/L0/env"
-	"ru/zakat/L0/logger"
-	"ru/zakat/L0/models"
+	"ru/zakat/L0/internal/env"
+	"ru/zakat/L0/internal/logger"
+	"ru/zakat/L0/internal/models"
 
 	"go.uber.org/zap"
 	"gorm.io/driver/postgres"

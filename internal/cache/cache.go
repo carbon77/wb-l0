@@ -1,9 +1,9 @@
 package cache
 
 import (
-	"ru/zakat/L0/db"
-	"ru/zakat/L0/logger"
-	"ru/zakat/L0/models"
+	"ru/zakat/L0/internal/db"
+	"ru/zakat/L0/internal/logger"
+	"ru/zakat/L0/internal/models"
 
 	"go.uber.org/zap"
 )

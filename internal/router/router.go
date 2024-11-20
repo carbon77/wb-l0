@@ -3,10 +3,10 @@ package router
 import (
 	"fmt"
 	"net/http"
-	"ru/zakat/L0/cache"
-	"ru/zakat/L0/env"
-	"ru/zakat/L0/kafka"
-	"ru/zakat/L0/models"
+	"ru/zakat/L0/internal/cache"
+	"ru/zakat/L0/internal/env"
+	"ru/zakat/L0/internal/kafka"
+	"ru/zakat/L0/internal/models"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"

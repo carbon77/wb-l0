@@ -1,11 +1,11 @@
 package main
 
 import (
-	"ru/zakat/L0/cache"
-	"ru/zakat/L0/db"
+	"ru/zakat/L0/internal/cache"
+	"ru/zakat/L0/internal/db"
 	"ru/zakat/L0/internal/router"
-	"ru/zakat/L0/kafka"
-	"ru/zakat/L0/logger"
+	"ru/zakat/L0/internal/kafka"
+	"ru/zakat/L0/internal/logger"
 )
 
 func main() {
