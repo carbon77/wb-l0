@@ -1,28 +1,24 @@
-package main
+package router
 
 import (
 	"fmt"
 	"net/http"
 	"ru/zakat/L0/cache"
-	"ru/zakat/L0/db"
 	"ru/zakat/L0/env"
 	"ru/zakat/L0/kafka"
-	"ru/zakat/L0/logger"
 	"ru/zakat/L0/models"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
 
-func main() {
-	log := logger.NewLogger()
-	repo := db.NewRepository()
-	cache := cache.NewCache(repo)
-	orderProducer := kafka.NewProducer()
+func InitRouter(
+	log *zap.Logger,
+	cache *cache.Cache,
+	orderProducer *kafka.OrderProducer,
+) {
 	r := gin.Default()
 	r.LoadHTMLGlob("web/templates/*")
-
-	go kafka.NewConsumer(cache)
 
 	r.GET("/orders/:uid", func(c *gin.Context) {
 		uid := c.Param("uid")
