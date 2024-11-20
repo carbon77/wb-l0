@@ -29,9 +29,9 @@
 ## Запуск
 1) Зайти в папку deployments
 ```console
-$cd deployments
+cd deployments
 ```
 3) Запустить через Docker Compose
 ```console
-$docker compose up -d
+docker compose up -d
 ```
