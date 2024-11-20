@@ -1,6 +1,10 @@
 package models
 
 import (
+	"encoding/json"
+	"errors"
+	"io"
+	"os"
 	"time"
 )
 
@@ -63,4 +67,29 @@ type Item struct {
 	NmId        int64   `json:"nm_id"`
 	Brand       string  `json:"brand"`
 	Status      int64   `json:"status"`
+}
+
+// Reads json file and returns Order model
+func ReadModel(filename string) (*Order, error) {
+	if filename == "" {
+		return nil, errors.New("filename can't be empty")
+	}
+	jsonFile, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	defer jsonFile.Close()
+
+	byteValue, err := io.ReadAll(jsonFile)
+	if err != nil {
+		return nil, err
+	}
+
+	var order Order
+	err = json.Unmarshal(byteValue, &order)
+	if err != nil {
+		return nil, err
+	}
+	return &order, nil
 }
