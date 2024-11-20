@@ -20,7 +20,7 @@ func main() {
 	cache := cache.NewCache(repo)
 	orderProducer := kafka.NewProducer()
 	r := gin.Default()
-	r.LoadHTMLGlob("templates/*")
+	r.LoadHTMLGlob("web/templates/*")
 
 	go kafka.NewConsumer(cache)
 
