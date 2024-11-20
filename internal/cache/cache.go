@@ -2,34 +2,37 @@ package cache
 
 import (
 	"ru/zakat/L0/internal/db"
-	"ru/zakat/L0/internal/logger"
 	"ru/zakat/L0/internal/models"
 	"sync"
-
-	"go.uber.org/zap"
 )
 
-type Cache struct {
+type Cache interface {
+	FindAll() []*models.Order
+	AddOrder(order *models.Order)
+	FindOrder(uid string) (*models.Order, bool)
+}
+
+type cache struct {
 	orders map[string]*models.Order
-	logger *zap.Logger
-	repo   *db.Repository
+	repo   db.RepoOrders
 	mu     *sync.Mutex
 }
 
-func NewCache(repo *db.Repository) *Cache {
-	logger := logger.NewLogger()
-	orders := repo.FindAll()
+func NewCache(repo db.RepoOrders) Cache {
+	orders, err := repo.FindAll()
+	if err != nil {
+		panic(err)
+	}
 	ordersMap := make(map[string]*models.Order)
 
 	for _, order := range orders {
 		ordersMap[order.UID] = order
 	}
 
-	logger.Info("Cache initialized")
-	return &Cache{ordersMap, logger, repo, &sync.Mutex{}}
+	return &cache{ordersMap, repo, &sync.Mutex{}}
 }
 
-func (c *Cache) FindAll() []*models.Order {
+func (c *cache) FindAll() []*models.Order {
 	ordersArr := make([]*models.Order, 0, len(c.orders))
 
 	for _, order := range c.orders {
@@ -39,14 +42,17 @@ func (c *Cache) FindAll() []*models.Order {
 	return ordersArr
 }
 
-func (c *Cache) FindOrder(uid string) (*models.Order, bool) {
+func (c *cache) FindOrder(uid string) (*models.Order, bool) {
 	order, ok := c.orders[uid]
 	return order, ok
 }
 
-func (c *Cache) AddOrder(order *models.Order) {
+func (c *cache) AddOrder(order *models.Order) {
 	c.mu.Lock()
-	c.repo.CreateOrder(order)
+	err := c.repo.CreateOrder(order)
+	if err != nil {
+		panic(err)
+	}
 	c.orders[order.UID] = order
 	c.mu.Unlock()
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"ru/zakat/L0/internal/config"
 	"ru/zakat/L0/internal/logger"
@@ -19,33 +20,41 @@ var (
 		config.DbHost, config.DBUser, config.DBPassword, config.DBName, config.DBPort)
 )
 
-type Repository struct {
-	db     *gorm.DB
-	logger *zap.Logger
+type RepoOrders interface {
+	FindAll() ([]*models.Order, error)
+	ReadModel(filename string) (models.Order, error)
+	CreateOrder(order *models.Order) error
 }
 
-func NewRepository() *Repository {
+type repoOrders struct {
+	db  *gorm.DB
+	log *zap.Logger
+}
+
+func NewRepository() RepoOrders {
+	logger := logger.NewLogger()
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		logger.Error("Failed to open connection", zap.Error(err))
 	}
 
-	logger := logger.NewLogger()
-
-	return &Repository{db, logger}
+	return &repoOrders{
+		db:  db,
+		log: logger,
+	}
 }
 
-func (r *Repository) FindAll() []*models.Order {
+func (r *repoOrders) FindAll() ([]*models.Order, error) {
 	var orders []*models.Order
 
 	result := r.db.Preload("Items").Preload("Delivery").Preload("Payment").Find(&orders)
 
-	r.logger.Info(fmt.Sprintf("Find all. Rows affected: %d", result.RowsAffected))
+	r.log.Info(fmt.Sprintf("Find all. Rows affected: %d", result.RowsAffected))
 
-	return orders
+	return orders, nil
 }
 
-func (r *Repository) ReadModel(filename string) models.Order {
+func (r *repoOrders) ReadModel(filename string) (models.Order, error) {
 	jsonFile, err := os.Open(filename)
 	if err != nil {
 		panic(err)
@@ -63,9 +72,10 @@ func (r *Repository) ReadModel(filename string) models.Order {
 	json.Unmarshal(byteValue, &order)
 
 	r.db.Create(&order)
-	return order
+	return order, nil
 }
 
-func (r *Repository) CreateOrder(order *models.Order) {
+func (r *repoOrders) CreateOrder(order *models.Order) error {
 	r.db.Create(order)
+	return nil
 }
