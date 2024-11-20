@@ -4,6 +4,7 @@ import (
 	"ru/zakat/L0/internal/db"
 	"ru/zakat/L0/internal/logger"
 	"ru/zakat/L0/internal/models"
+	"sync"
 
 	"go.uber.org/zap"
 )
@@ -12,6 +13,7 @@ type Cache struct {
 	orders map[string]*models.Order
 	logger *zap.Logger
 	repo   *db.Repository
+	mu     *sync.Mutex
 }
 
 func NewCache(repo *db.Repository) *Cache {
@@ -24,7 +26,7 @@ func NewCache(repo *db.Repository) *Cache {
 	}
 
 	logger.Info("Cache initialized")
-	return &Cache{ordersMap, logger, repo}
+	return &Cache{ordersMap, logger, repo, &sync.Mutex{}}
 }
 
 func (c *Cache) FindAll() []*models.Order {
@@ -43,6 +45,8 @@ func (c *Cache) FindOrder(uid string) (*models.Order, bool) {
 }
 
 func (c *Cache) AddOrder(order *models.Order) {
+	c.mu.Lock()
 	c.repo.CreateOrder(order)
 	c.orders[order.UID] = order
+	c.mu.Unlock()
 }
