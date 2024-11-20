@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"ru/zakat/L0/internal/cache"
-	"ru/zakat/L0/internal/env"
+	"ru/zakat/L0/internal/config"
 	"ru/zakat/L0/internal/kafka"
 	"ru/zakat/L0/internal/models"
 
@@ -68,8 +68,8 @@ func InitRouter(
 		})
 	}
 
-	port := env.GetEnv("L0_PORT", "8080")
-	host := env.GetEnv("L0_HOST", "localhost")
+	port := config.Port
+	host := config.Host
 	log.Info("Starting server...", zap.String("port", port))
 	r.Run(fmt.Sprintf("%s:%s", host, port))
 }

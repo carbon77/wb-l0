@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"ru/zakat/L0/internal/env"
+	"ru/zakat/L0/internal/config"
 	"ru/zakat/L0/internal/logger"
 	"ru/zakat/L0/internal/models"
 
@@ -15,12 +15,8 @@ import (
 )
 
 var (
-	host     = env.GetEnv("L0_DB_HOST", "localhost")
-	user     = env.GetEnv("L0_DB_USER", "postgres")
-	dbname   = env.GetEnv("L0_DB_NAME", "wb_l0")
-	port     = env.GetEnv("L0_DB_PORT", "5433")
-	password = env.GetEnv("L0_DB_PASSWORD", "postgres")
-	dsn      = fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", host, user, password, dbname, port)
+	dsn = fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		config.DbHost, config.DBUser, config.DBPassword, config.DBName, config.DBPort)
 )
 
 type Repository struct {
