@@ -30,7 +30,7 @@ type Order struct {
 }
 
 type Delivery struct {
-	ID       int64  `gorm:"primaryKey;column:delivery_id"`
+	ID       int    `gorm:"primaryKey;column:delivery_id"`
 	OrderUID string `gorm:"column:order_uid"`
 	Name     string `json:"name"`
 	Phone    string `json:"phone"`
@@ -42,7 +42,7 @@ type Delivery struct {
 }
 
 type Payment struct {
-	ID           int64   `gorm:"primaryKey;column:payment_id"`
+	ID           int     `gorm:"primaryKey;column:payment_id"`
 	OrderUID     string  `gorm:"column:order_uid"`
 	Transaction  string  `json:"transaction"`
 	RequestId    string  `json:"request_id"`
@@ -57,19 +57,19 @@ type Payment struct {
 }
 
 type Item struct {
-	ID          int64   `gorm:"primaryKey;column:item_id"`
+	ID          int     `gorm:"primaryKey;column:item_id"`
 	OrderUID    string  `gorm:"column:order_uid"`
-	ChrtId      int64   `json:"chrt_id"`
+	ChrtId      int     `json:"chrt_id"`
 	TrackNumber string  `json:"track_number"`
 	Price       float64 `json:"price"`
 	Rid         string  `json:"rid"`
 	Name        string  `json:"name"`
-	Sale        int64   `json:"sale"`
+	Sale        int     `json:"sale"`
 	Size        string  `json:"size" gorm:"column:item_size"`
 	TotalPrice  float64 `json:"total_price"`
-	NmId        int64   `json:"nm_id"`
+	NmId        int     `json:"nm_id"`
 	Brand       string  `json:"brand"`
-	Status      int64   `json:"status"`
+	Status      int     `json:"status"`
 }
 
 // Reads json file and returns Order model
@@ -97,6 +97,7 @@ func ReadModel(filename string) (*Order, error) {
 	return &order, nil
 }
 
+// Testing order model from model.json
 func TestOrder(t *testing.T, order *Order) {
 	TestField(t, "order_uid", order.UID, "b563feb7b2b84b6test")
 	TestField(t, "order_uid", order.UID, "b563feb7b2b84b6test")
@@ -159,19 +160,19 @@ func GenerateOrder() *Order {
 
 	for i := 0; i < itemCount; i++ {
 		items = append(items, Item{
-			ID:          gofakeit.Int64(),
+			ID:          gofakeit.IntRange(1, 10000),
 			OrderUID:    "",
-			ChrtId:      gofakeit.Int64(),
+			ChrtId:      gofakeit.IntRange(1, 10000),
 			TrackNumber: gofakeit.UUID(),
 			Price:       gofakeit.Price(10, 100),
 			Rid:         gofakeit.UUID(),
 			Name:        gofakeit.ProductName(),
-			Sale:        int64(gofakeit.IntRange(10, 100)),
+			Sale:        gofakeit.IntRange(10, 100),
 			Size:        gofakeit.RandomString([]string{"S", "M", "L", "XL"}),
 			TotalPrice:  gofakeit.Price(10, 100),
-			NmId:        gofakeit.Int64(),
+			NmId:        gofakeit.IntRange(1, 10000),
 			Brand:       gofakeit.Car().Brand,
-			Status:      gofakeit.Int64(),
+			Status:      gofakeit.IntRange(1, 10000),
 		})
 	}
 
@@ -184,12 +185,12 @@ func GenerateOrder() *Order {
 		CustomerId:        gofakeit.UUID(),
 		DeliveryService:   gofakeit.Company(),
 		Shardkey:          gofakeit.Word(),
-		SmId:              gofakeit.Int(),
+		SmId:              gofakeit.IntRange(1, 1000),
 		DateCreated:       time.Now(),
 		OofShard:          gofakeit.Word(),
 		Delivery: Delivery{
-			ID:       gofakeit.Int64(),
-			OrderUID: "", // to be filled later
+			ID:       gofakeit.IntRange(1, 10000),
+			OrderUID: "",
 			Name:     gofakeit.Name(),
 			Phone:    gofakeit.Phone(),
 			Zip:      gofakeit.Zip(),
@@ -199,7 +200,7 @@ func GenerateOrder() *Order {
 			Email:    gofakeit.Email(),
 		},
 		Payment: Payment{
-			ID:           gofakeit.Int64(),
+			ID:           gofakeit.IntRange(1, 10000),
 			OrderUID:     "",
 			Transaction:  gofakeit.UUID(),
 			RequestId:    gofakeit.UUID(),
