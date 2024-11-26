@@ -7,6 +7,8 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	"github.com/brianvoe/gofakeit/v7"
 )
 
 type Order struct {
@@ -149,4 +151,75 @@ func TestField[T comparable](t *testing.T, name string, actualValue T, expectedV
 	if actualValue != expectedValue {
 		t.Errorf("Wrong %s. want=%v, got=%v", name, actualValue, expectedValue)
 	}
+}
+
+func GenerateOrder() *Order {
+	var items []Item
+	itemCount := gofakeit.Number(1, 5)
+
+	for i := 0; i < itemCount; i++ {
+		items = append(items, Item{
+			ID:          gofakeit.Int64(),
+			OrderUID:    "",
+			ChrtId:      gofakeit.Int64(),
+			TrackNumber: gofakeit.UUID(),
+			Price:       gofakeit.Price(10, 100),
+			Rid:         gofakeit.UUID(),
+			Name:        gofakeit.ProductName(),
+			Sale:        int64(gofakeit.IntRange(10, 100)),
+			Size:        gofakeit.RandomString([]string{"S", "M", "L", "XL"}),
+			TotalPrice:  gofakeit.Price(10, 100),
+			NmId:        gofakeit.Int64(),
+			Brand:       gofakeit.Car().Brand,
+			Status:      gofakeit.Int64(),
+		})
+	}
+
+	order := Order{
+		UID:               gofakeit.UUID(),
+		TrackNumber:       gofakeit.UUID(),
+		Entry:             gofakeit.Word(),
+		Locale:            gofakeit.Language(),
+		InternalSignature: gofakeit.Word(),
+		CustomerId:        gofakeit.UUID(),
+		DeliveryService:   gofakeit.Company(),
+		Shardkey:          gofakeit.Word(),
+		SmId:              gofakeit.Int(),
+		DateCreated:       time.Now(),
+		OofShard:          gofakeit.Word(),
+		Delivery: Delivery{
+			ID:       gofakeit.Int64(),
+			OrderUID: "", // to be filled later
+			Name:     gofakeit.Name(),
+			Phone:    gofakeit.Phone(),
+			Zip:      gofakeit.Zip(),
+			City:     gofakeit.City(),
+			Address:  gofakeit.Address().Address,
+			Region:   gofakeit.Country(),
+			Email:    gofakeit.Email(),
+		},
+		Payment: Payment{
+			ID:           gofakeit.Int64(),
+			OrderUID:     "",
+			Transaction:  gofakeit.UUID(),
+			RequestId:    gofakeit.UUID(),
+			Currency:     gofakeit.Currency().Short,
+			Provider:     gofakeit.Company(),
+			Amount:       float32(gofakeit.Price(10, 100)),
+			PaymentDt:    gofakeit.Date().Unix(),
+			Bank:         gofakeit.Company(),
+			DeliveryCost: gofakeit.Price(0, 20),
+			GoodsTotal:   gofakeit.Price(10, 100),
+			CustomFee:    gofakeit.Price(0, 5),
+		},
+		Items: items,
+	}
+
+	order.Delivery.OrderUID = order.UID
+	order.Payment.OrderUID = order.UID
+	for i := range order.Items {
+		order.Items[i].OrderUID = order.UID
+	}
+
+	return &order
 }

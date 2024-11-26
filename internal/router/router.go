@@ -34,17 +34,8 @@ func InitRouter(
 	api := r.Group("/api")
 	{
 		api.POST("/orders/send", func(c *gin.Context) {
-			var order models.Order
-
-			if err := c.BindJSON(&order); err != nil {
-				log.Error("Failed to read request body", zap.Error(err))
-				c.JSON(http.StatusBadRequest, gin.H{
-					"message": "Failed to read request body",
-				})
-				return
-			}
-
-			orderProducer.SendOrder("orders", &order)
+			order := models.GenerateOrder()
+			orderProducer.SendOrder("orders", order)
 			c.JSON(http.StatusOK, gin.H{})
 		})
 

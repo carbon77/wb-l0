@@ -4,6 +4,7 @@ go 1.23.0
 
 require (
 	github.com/IBM/sarama v1.43.3
+	github.com/brianvoe/gofakeit/v7 v7.1.2
 	github.com/gin-gonic/gin v1.10.0
 	go.uber.org/zap v1.27.0
 	gorm.io/driver/postgres v1.5.9
