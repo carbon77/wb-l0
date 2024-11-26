@@ -6,19 +6,19 @@ import (
 	"sync"
 )
 
-type Cache interface {
+type ICache interface {
 	FindAll() []*models.Order
 	AddOrder(order *models.Order)
 	FindOrder(uid string) (*models.Order, bool)
 }
 
-type cache struct {
+type Cache struct {
 	orders map[string]*models.Order
 	repo   db.RepoOrders
 	mu     *sync.Mutex
 }
 
-func NewCache(repo db.RepoOrders) Cache {
+func NewCache(repo db.RepoOrders) *Cache {
 	orders, err := repo.FindAll()
 	if err != nil {
 		panic(err)
@@ -29,10 +29,10 @@ func NewCache(repo db.RepoOrders) Cache {
 		ordersMap[order.UID] = order
 	}
 
-	return &cache{ordersMap, repo, &sync.Mutex{}}
+	return &Cache{ordersMap, repo, &sync.Mutex{}}
 }
 
-func (c *cache) FindAll() []*models.Order {
+func (c *Cache) FindAll() []*models.Order {
 	ordersArr := make([]*models.Order, 0, len(c.orders))
 
 	for _, order := range c.orders {
@@ -42,12 +42,12 @@ func (c *cache) FindAll() []*models.Order {
 	return ordersArr
 }
 
-func (c *cache) FindOrder(uid string) (*models.Order, bool) {
+func (c *Cache) FindOrder(uid string) (*models.Order, bool) {
 	order, ok := c.orders[uid]
 	return order, ok
 }
 
-func (c *cache) AddOrder(order *models.Order) {
+func (c *Cache) AddOrder(order *models.Order) {
 	c.mu.Lock()
 	err := c.repo.CreateOrder(order)
 	if err != nil {

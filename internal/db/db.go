@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"ru/zakat/L0/internal/config"
 	"ru/zakat/L0/internal/logger"
