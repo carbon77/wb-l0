@@ -2,7 +2,6 @@ package models
 
 import (
 	"testing"
-	"time"
 )
 
 func TestEmptyFilename(t *testing.T) {
